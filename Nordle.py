@@ -1,23 +1,24 @@
 import math
-import random
-round_num = 1
-words = []
-wins = 0
-losses = 0
-win_info = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 def main():
     global filename
     filename = input("Enter the name of the word file: ")
     play_game(filename)
 
-def get_random_word(words):
-    random_index = random.randrange(len(words))
-    return words[random_index]
+def round_number():
+    round_number.counter += 1
+round_number.counter = 1
+
+def wins():
+    wins.counter += 1
+wins.counter = 0
+
+def stats_update(count):
+    win_info[count] += 1
+win_info = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 def play_game(filename):
     file = open(filename, 'r')
-    global words
     words = file.read().split()
     file.close()
     print_greeting()
@@ -40,11 +41,10 @@ def print_rules():
     print('========================================================================\n')
 
 def start_playing(words):
-    global round_num
-    print(f'\nRound: {round_num}\n')
+    print(f'\nRound: {round_number.counter}\n')
     word = get_random_word(words)
     play_round(word)
-    play_again()
+    play_again(words)
 
 def play_round(word):
     count = 1
@@ -80,38 +80,29 @@ def check_guess(word, guess):
 def check_win(result, word, count):
     if result == word.upper() and count < 7:
         print(f'Success! The word is {word}!\n')
-        global wins
-        wins += 1
-        global win_info
-        win_info[count] += 1
+        wins()
+        stats_update(count)
     elif count == 6:
         print(f'Better luck next time! The word is {word}!\n')
-        global losses
-        losses += 1
 
-def play_again():
+def play_again(words):
     choice = input("Please enter 'Y' to continue or 'N' to stop playing: ")
     while choice not in 'YN':
         print("Only enter 'Y' or 'N'!")
         choice = input("Please enter 'Y' to continue or 'N' to stop playing: ")
     if choice == 'Y':
-        global round_num
-        round_num += 1
+        round_number()
         start_playing(words)
     else:
         print_info(win_info)
         return
 
 def print_info(data_dict):
-    global wins
-    global round_num
     print()
     print('========================================================================')
     print('                                Summary')
-    print(f'Win percentage: {math.ceil((wins/round_num) * 100)}%')
+    print(f'Win percentage: {math.ceil((wins.counter/round_number.counter) * 100)}%')
     print('Win Distribution:')
     for i in sorted(data_dict):
         print(f"{i}|{'#' * data_dict[i]}{data_dict[i]}")
     print('========================================================================')
-
-main()
