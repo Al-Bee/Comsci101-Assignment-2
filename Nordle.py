@@ -5,25 +5,16 @@ def main():
     filename = input("Enter the name of the word file: ")
     play_game(filename)
 
-def round_number():
-    round_number.counter += 1
-round_number.counter = 1
-
-def wins():
-    wins.counter += 1
-wins.counter = 0
-
-def stats_update(count):
-    win_info[count] += 1
-win_info = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-
 def play_game(filename):
     file = open(filename, 'r')
     words = file.read().split()
     file.close()
+    round_num = 1
+    wins = 0
+    win_info = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+    start_playing(words, round_num, wins, win_info)
     print_greeting()
     print_rules()
-    start_playing(words)
 
 def print_greeting():
     name = input('Please enter your name: ')
@@ -40,13 +31,13 @@ def print_rules():
     print('are displayed in lowercase.')
     print('========================================================================\n')
 
-def start_playing(words):
-    print(f'\nRound: {round_number.counter}\n')
+def start_playing(words, round_num, wins, win_info):
+    print(f'\nRound: {round_num}\n')
     word = get_random_word(words)
-    play_round(word)
-    play_again(words)
+    wins, win_info = play_round(word, wins, win_info)
+    play_again(words, round_num, wins, win_info)
 
-def play_round(word):
+def play_round(word, wins, win_info):
     count = 1
     result = ''
     while result != word.upper() and count < 7:
@@ -54,8 +45,9 @@ def play_round(word):
         player_guess = get_player_guess()
         result = check_guess(word, player_guess)
         print(' '.join(i for i in result) + '\n')
-        check_win(result, word, count)
+        wins, win_info = check_win(result, word, count, wins, win_info)
         count += 1
+    return wins, win_info
 
 def get_player_guess():
     guess = input('Please enter your guess: ')
@@ -64,45 +56,46 @@ def get_player_guess():
     return guess.lower()
 
 def check_guess(word, guess):
-    correct = {i: guess[i].upper() for i in range(0, 5) if guess[i] == word[i]}
-    incorrect = {i: guess[i] for i in range(0, 5) if guess[i] != word[i]}
+    correct = [[i, guess[i].upper()] for i in range(0, 5) if guess[i] == word[i]]
+    incorrect = [[i, guess[i]] for i in range(0, 5) if guess[i] != word[i]]
     remaining = [word[i] for i in range(0, 5) if guess[i] != word[i]]
     for i in incorrect:
-        if incorrect[i] not in remaining:
-            incorrect[i] = '_'
+        if i[1] not in remaining:
+            i[1] = '_'
         else:
-            remaining.pop(remaining.index(incorrect[i]))
-    attempt = correct|incorrect
-    attempt = dict(sorted(attempt.items()))
-    result = ''.join([i for i in attempt.values()])
-    return result
+            remaining.pop(remaining.index(i[1]))
+    return ''.join([i[1] for i in sorted(correct + incorrect)])
 
-def check_win(result, word, count):
+def check_win(result, word, count, wins, win_info):
     if result == word.upper() and count < 7:
         print(f'Success! The word is {word}!\n')
-        wins()
-        stats_update(count)
+        wins += 1
+        win_info[count] += 1
+        return wins, win_info
     elif count == 6:
         print(f'Better luck next time! The word is {word}!\n')
+        return wins, win_info
+    else:
+        return wins, win_info
 
-def play_again(words):
+def play_again(words, round_num, wins, win_info):
     choice = input("Please enter 'Y' to continue or 'N' to stop playing: ")
     while choice not in 'YN':
         print("Only enter 'Y' or 'N'!")
         choice = input("Please enter 'Y' to continue or 'N' to stop playing: ")
     if choice == 'Y':
-        round_number()
-        start_playing(words)
+        round_num += 1
+        start_playing(words, round_num, wins, win_info)
     else:
-        print_info(win_info)
+        print_info(round_num, wins, win_info)
         return
 
-def print_info(data_dict):
+def print_info(round_num, wins, win_info):
     print()
     print('========================================================================')
     print('                                Summary')
-    print(f'Win percentage: {math.ceil((wins.counter/round_number.counter) * 100)}%')
+    print(f'Win percentage: {math.ceil((wins/round_num) * 100)}%')
     print('Win Distribution:')
-    for i in sorted(data_dict):
-        print(f"{i}|{'#' * data_dict[i]}{data_dict[i]}")
+    for i in sorted(win_info):
+        print(f"{i}|{'#' * win_info[i]}{win_info[i]}")
     print('========================================================================')
