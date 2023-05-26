@@ -12,9 +12,9 @@ def play_game(filename):
     round_num = 1
     wins = 0
     win_info = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-    start_playing(words, round_num, wins, win_info)
     print_greeting()
     print_rules()
+    start_playing(words, round_num, wins, win_info)
 
 def print_greeting():
     name = input('Please enter your name: ')
@@ -91,11 +91,9 @@ def play_again(words, round_num, wins, win_info):
         return
 
 def print_info(round_num, wins, win_info):
-    print()
-    print('========================================================================')
+    print('\n========================================================================')
     print('                                Summary')
-    print(f'Win percentage: {math.ceil((wins/round_num) * 100)}%')
-    print('Win Distribution:')
+    print(f'Win percentage: {math.ceil((wins/round_num) * 100)}%\nWin Distribution:')
     for i in sorted(win_info):
         print(f"{i}|{'#' * win_info[i]}{win_info[i]}")
     print('========================================================================')
