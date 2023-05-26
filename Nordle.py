@@ -71,12 +71,9 @@ def check_win(result, word, count, wins, win_info):
         print(f'Success! The word is {word}!\n')
         wins += 1
         win_info[count] += 1
-        return wins, win_info
     elif count == 6:
         print(f'Better luck next time! The word is {word}!\n')
-        return wins, win_info
-    else:
-        return wins, win_info
+    return wins, win_info
 
 def play_again(words, round_num, wins, win_info):
     choice = input("Please enter 'Y' to continue or 'N' to stop playing: ")
@@ -88,7 +85,6 @@ def play_again(words, round_num, wins, win_info):
         start_playing(words, round_num, wins, win_info)
     else:
         print_info(round_num, wins, win_info)
-        return
 
 def print_info(round_num, wins, win_info):
     print('\n========================================================================')
