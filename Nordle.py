@@ -1,7 +1,6 @@
 import math
 
 def main():
-    global filename
     filename = input("Enter the name of the word file: ")
     play_game(filename)
 
