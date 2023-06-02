@@ -1,4 +1,5 @@
 import math
+import random
 
 def main():
     filename = input("Enter the name of the word file: ")
@@ -29,6 +30,10 @@ def print_rules():
     print('Letters that are in the word but have been guessed in the wrong location')
     print('are displayed in lowercase.')
     print('========================================================================\n')
+    
+def get_random_word(words):
+    random_index = random.randrange(len(words))
+    return words[random_index]
 
 def start_playing(words, round_num, wins, win_info):
     print(f'\nRound: {round_num}\n')
